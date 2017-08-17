@@ -35,6 +35,16 @@ class LambdaTest {
 
     @Test
     fun `simple lambda with collection test`() {
+        people.maxBy({ p: Person -> p.age })
+        people.maxBy { p: Person -> p.age }
+        people.maxBy { p: Person ->
+            println("age = $p.age")
+            p.age
+        }
+        people.maxBy { p -> p.age }
+        people.maxBy { it.age }
+        people.maxBy(Person::age) // member reference
+
         val oldest: Person = people.maxBy { it.age }!!
         oldest shouldNotBe null
         oldest.firstName shouldBe "Antonel"
@@ -54,4 +64,21 @@ class LambdaTest {
         println("peopleAsString = $peopleAsString")
         peopleAsString shouldHave substring("; ")
     }
+
+    @Test
+    fun `lambda with receivers`() {
+        println(peopleAsString(people))
+        println(peopleToString(people))
+    }
+
+    fun peopleAsString(people: Set<Person>) = with(StringBuilder()) {
+        append(people.joinToString())
+        append("\nI know  all these people!")
+        toString()
+    }
+
+    fun peopleToString(people: Set<Person>) = StringBuilder().apply {
+        append(people.joinToString())
+        append("\nI definitely know  all these people!")
+    }.toString()
 }
